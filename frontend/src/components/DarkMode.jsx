@@ -28,8 +28,8 @@ const DarkMode = () => {
 
 
   return(
-    <div className="flex justify-end">
-      <button className= "bg-indigo-500 text-white border-0 py-2 px-4 mt-2 mx-2  focus:outline-none hover:bg-indigo-600 rounded-xl text-sm"
+    <div className="relative">
+      <button className= "bg-indigo-500 text-white border-0 py-2 px-4 fixed right-4 top-4 z-10 focus:outline-none hover:bg-indigo-600 rounded-xl text-sm"
         onClick={toggle}>
         Toggle Mode
         </button>
