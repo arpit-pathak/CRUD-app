@@ -1,53 +1,53 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
-export const UserList = () => {
-  const [userData, setUserData] = useState(null);
+import toast from "react-hot-toast";
 
-  const fetchUserData = async () => {
-    const resp = await axios.get("/getUser");
-    console.log(resp);
-
-    // if No users are there please dont set the values
-    if (resp.data.users.length > 0) {
-      setUserData(resp.data.users);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserData();
-  }, [userData]);
-
-  // EDIT
+const UsersList = ({ userData, fetchUsersData, BASE_URL }) => {
   const handleEdit = async (user) => {
-    const userName = prompt("Enter your new name");
-    const userEmail = prompt("Enter Your new mail");
+    try {
+      const userName = prompt("Enter new name");
+      const userEmail = prompt("Enter new email");
 
-    if (!userName || !userEmail) {
-      alert("Please Enter Name and Email Both");
-    } else {
-      const resp = await axios.put(`/editUser/${user._id}`, {
-        name: userName,
-        email: userEmail,
-      });
-      console.log(resp);
+      if (!userName || !userEmail) {
+        toast.error("Please enter both name and email");
+      } else {
+        const resp = await axios.put(`${BASE_URL}/editUser/${user._id}`, {
+          name: userName,
+          email: userEmail,
+        });
+
+        if (resp.data.success) {
+          toast.success("User edited successfully");
+          fetchUsersData();
+        }
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
     }
   };
 
-  // DELETE
   const handleDelete = async (userId) => {
-    const resp = await axios.delete(`/deleteUser/${userId}`);
-    console.log(resp);
+    try {
+      const resp = await axios.delete(`${BASE_URL}/deleteUser/${userId}`);
+
+      if (resp.data.success) {
+        toast.success("User deleted successfully");
+        fetchUsersData();
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
+
   return (
-    <section className="text-gray-600 body-font ">
+    <section className="text-gray-600 body-font">
       <div className="container px-5 py-24 mx-auto">
         <div className="flex flex-col text-center w-full mb-8">
-          <h1 className="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900  dark:text-white">
+          <h1 className="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">
             All Users
           </h1>
         </div>
         <div className="lg:w-2/3 w-full mx-auto overflow-auto">
-          <table className="table-auto w-full text-left whitespace-no-wrap  dark:text-white">
+          <table className="table-auto w-full text-left whitespace-no-wrap">
             <thead>
               <tr>
                 <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">
@@ -59,7 +59,7 @@ export const UserList = () => {
                 <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
                   Edit
                 </th>
-                <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900  text-sm bg-gray-100">
+                <th className="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
                   Delete
                 </th>
               </tr>
@@ -67,7 +67,7 @@ export const UserList = () => {
             <tbody>
               {userData &&
                 userData.map((user) => (
-                  <tr>
+                  <tr key={user._id}>
                     <td className="px-4 py-3">{user.name}</td>
                     <td className="px-4 py-3">{user.email}</td>
                     <td className="px-4 py-3">
@@ -78,7 +78,7 @@ export const UserList = () => {
                         Edit
                       </button>
                     </td>
-                    <td className="px-4 py-3 text-lg text-gray-900  dark:text-white">
+                    <td className="px-4 py-3 text-lg text-gray-900">
                       <button
                         className="hover:text-red-500"
                         onClick={() => handleDelete(user._id)}
@@ -95,3 +95,5 @@ export const UserList = () => {
     </section>
   );
 };
+
+export default UsersList;

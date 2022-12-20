@@ -1,37 +1,43 @@
 import React, { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
-export const Form = () => {
-  // To Store the value from Frontend
+const Form = ({ fetchUsersData, BASE_URL }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  console.log(userName, userEmail);
 
-  // Function to send the Data
   const submitData = async () => {
-    const data = {
-      name: userName,
-      email: userEmail,
-    };
-    const res = await axios.post("/createUser", data);
-    console.log(res);
+    try {
+      const data = {
+        name: userName,
+        email: userEmail,
+      };
+
+      const res = await axios.post(`${BASE_URL}/createUser`, data);
+
+      if (res.data.success) {
+        toast.success("User created successfully");
+        fetchUsersData();
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
-  // To handle the Default
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // To submit the Data
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
     submitData();
-    // But Empty the previous Details
     setUserName("");
     setUserEmail("");
   };
+
   return (
-    <div >
+    <div>
       <form onSubmit={handleSubmit}>
         <section className="text-gray-600 body-font relative">
           <div className="container px-5 py-8 mx-auto">
             <div className="flex flex-col text-center w-full mb-6">
-              <h1 className="sm:text-3xl text-2xl font-medium title-font text-gray-900  dark:text-white">
+              <h1 className="sm:text-3xl text-2xl font-medium title-font text-gray-900">
                 Create User
               </h1>
             </div>
@@ -41,7 +47,7 @@ export const Form = () => {
                   <div className="relative">
                     <label
                       htmlFor="name"
-                      className="leading-7 text-sm text-gray-600 dark:text-white"
+                      className="leading-7 text-sm text-gray-600"
                     >
                       Name
                     </label>
@@ -51,7 +57,7 @@ export const Form = () => {
                       name="name"
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                       value={userName}
-                      onChange={(event) => setUserName(event.target.value)}
+                      onChange={(e) => setUserName(e.target.value)}
                     />
                   </div>
                 </div>
@@ -59,7 +65,7 @@ export const Form = () => {
                   <div className="relative">
                     <label
                       htmlFor="email"
-                      className="leading-7 text-sm text-gray-600  dark:text-white"
+                      className="leading-7 text-sm text-gray-600"
                     >
                       Email
                     </label>
@@ -69,9 +75,7 @@ export const Form = () => {
                       name="email"
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                       value={userEmail}
-                      onChange={(event) => {
-                        setUserEmail(event.target.value);
-                      }}
+                      onChange={(e) => setUserEmail(e.target.value)}
                     />
                   </div>
                 </div>
@@ -91,3 +95,5 @@ export const Form = () => {
     </div>
   );
 };
+
+export default Form;

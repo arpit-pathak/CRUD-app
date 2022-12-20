@@ -1,13 +1,37 @@
+import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
+import axios from "axios";
+
 import "./index.css";
-import { Form } from "./components/Form";
-import { UserList } from "./components/UserList";
-import DarkMode from "./components/DarkMode";
+import Form from "./components/Form";
+import UsersList from "./components/UsersList";
+
+const BASE_URL = "http://localhost:4000";
+
 function App() {
+  const [userData, setUserData] = useState(null);
+  const fetchUsersData = async () => {
+    const resp = await axios.get(`${BASE_URL}/getUser`);
+
+    setUserData(resp.data.users);
+  };
+  useEffect(() => {
+    fetchUsersData();
+  }, []);
+
   return (
-    <div className="h-full dark:bg-black dark:text-white">
-      <DarkMode />
-      <Form />
-      <UserList />
+    <div className="App">
+      {/* Form Component */}
+      <Form fetchUsersData={fetchUsersData} BASE_URL={BASE_URL} />
+      {/* All users list */}
+      <UsersList
+        userData={userData}
+        setUserData={setUserData}
+        fetchUsersData={fetchUsersData}
+        BASE_URL={BASE_URL}
+      />
+
+      <Toaster />
     </div>
   );
 }
